@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Canvas画板</title>
+  <style>
+    #canvas {
+      border: 1px solid black;
+    }
+
+    .bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" width="800" height="800"></canvas>
+  <div class="bar">
+    <button id="clearBtn">清除</button>
+    线宽:
+    <select id="lineWidth-select">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="5" selected>5</option>
+      <option value="10">10</option>
+    </select>
+    色彩:
+    <select id="color-select">
+      <option value="black" selected>black</option>
+      <option value="red">red</option>
+      <option value="blue">blue</option>
+      <option value="green">green</option>
+      <option value="yellow">yellow</option>
+    </select>
+  </div>
+</body>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const clearBtn = document.getElementById('clearBtn');
+  const lineWidthSelect = document.getElementById("lineWidth-select");
+  const colorSelect = document.getElementById("color-select");
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  
+  initEventListener();
+
+  function drawing(e) {
+    if (!isDrawing) return;
+    ctx.lineWidth = lineWidthSelect.options[lineWidthSelect.selectedIndex].value;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = colorSelect.options[colorSelect.selectedIndex].value;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    lastX = e.offsetX;
+    lastY = e.offsetY;
+  }
+
+  function initEventListener() {
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      lastX = e.offsetX;
+      lastY = e.offsetY;
+      drawing(e);
+    });
+    canvas.addEventListener('mousemove', drawing);
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+    canvas.addEventListener('mouseout', () => {
+      isDrawing = false;
+    });
+    clearBtn.addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  }
+
+</script>
+
+</html>
